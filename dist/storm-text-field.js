@@ -1,16 +1,16 @@
 /**
  * @name storm-text-field: Input/textarea wrapper module to surface state and validity to the UI
- * @version 0.1.0: Tue, 11 Apr 2017 16:12:15 GMT
+ * @version 0.1.0: Wed, 08 Nov 2017 11:21:12 GMT
  * @author stormid
  * @license MIT
  */
 const defaults = {
-	labelClassName: 'label',
-	fieldClassName: 'field',
+	labelClassName: 'form-control-label',
+	fieldClassName: 'form-control',
 	focusClassName: 'is--focused',
 	dirtyClassName: 'is--dirty',
 	invalidClassName: 'is--invalid',
-	errorMsgClassName: 'form__error'
+	errorMsgClassName: 'form-error'
 };
 
 const StormTextField = {
@@ -24,15 +24,26 @@ const StormTextField = {
 		this.input.addEventListener('change', this.boundChangeHandler);
 		this.input.addEventListener('focus', this.focusHandler.bind(this));
 		this.input.addEventListener('blur', this.blurHandler.bind(this));
+		this.input.addEventListener('invalid', this.invalidHandler.bind(this));
 		
 		this.setState();
+		this.isSwapped = false;
 
 		return this;
 	},
-	changeHandler(){
+	swapHandlers(){
+	   this.input.removeEventListener('change', this.boundChangeHandler);
+	   this.input.addEventListener('input', this.boundSetState);
+	   this.isSwapped = true;
+	},
+	invalidHandler() {
+		this.isDirty = true;
+		!this.isSwapped && this.swapHandlers();
+		this.validate();
+	},
+	changeHandler() {
 		this.setState();
-		this.input.removeEventListener('change', this.boundChangeHandler);
-		this.input.addEventListener('input', this.boundSetState);
+		this.swapHandlers();
 	},
 	setState(){
 		this.checkDirty();
@@ -58,7 +69,7 @@ const StormTextField = {
 		this.errorMsg = document.createElement('div');
 		this.errorMsg.classList.add(this.settings.errorMsgClassName);
 		this.errorMsg.innerText = this.input.validationMessage || this.input.setCustomValidity;
-		this.node.parentNode.appendChild(this.errorMsg);
+		this.node.appendChild(this.errorMsg);
 	},
 	removeError(){
 		if (this.errorMsg) {
