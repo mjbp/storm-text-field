@@ -1,6 +1,6 @@
 {
   "name": "storm-text-field",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Input/textarea wrapper module to surface state and validity to the UI",
   "author": "stormid",
   "license": "MIT",
